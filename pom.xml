@@ -12,6 +12,8 @@
     <name>OpcClient</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <spring.boot.maven.plugin>2.0.4.RELEASE</spring.boot.maven.plugin>
     </properties>
 
 
@@ -26,15 +28,19 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
     <dependencies>
-
         <!--OpenSCADA OPC Driver-->
         <dependency>
-            <groupId>org.openscada.external</groupId>
-            <artifactId>org.openscada.da.server.opc</artifactId>
+            <groupId>org.openscada.utgard</groupId>
+            <artifactId>org.openscada.opc.lib</artifactId>
             <version>1.5.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.59</version>
+        </dependency>
+
 
         <!--web组件-->
         <dependency>
@@ -91,14 +97,11 @@
         </dependency>
 
 
-
         <dependency>
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
             <version>3.22.0-GA</version>
         </dependency>
-
-
 
 
         <dependency>
@@ -124,6 +127,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot.maven.plugin}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -222,5 +226,12 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 
 </project>
