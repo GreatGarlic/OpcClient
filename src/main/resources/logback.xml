@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<configuration debug="true">
+    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <Target>System.out</Target>
+        <encoder>
+            <pattern>%d-%c-%t-%5p: %m%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name="FILE"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>log/all.log</File>
+        <Append>true</Append>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ALL</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>log/all-%d{yyyy-MM-dd,aux}/all-%d{yyyy-MM-dd}.%i.zip</FileNamePattern>
+            <maxFileSize>32MB</maxFileSize>
+        </rollingPolicy>
+        <encoder>
+            <charset>utf-8</charset>
+            <pattern>%d-%c-%t-%5p: %m%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="ERRORFILE"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <Append>true</Append>
+        <File>log/error/error.log</File>
+        <encoder>
+            <charset>utf-8</charset>
+            <pattern>%d-%c-%t-%5p: %m%n</pattern>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <FileNamePattern>log/error/error-%d{yyyy-MM-dd,aux}/error-%d{yyyy-MM-dd}.%i.zip</FileNamePattern>
+            <maxFileSize>32MB</maxFileSize>
+        </rollingPolicy>
+    </appender>
+
+
+
+
+
+
+
+
+    <!--所有日志异步输出 -->
+    <!--<appender name="AsyncFile"-->
+    <!--class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">-->
+    <!--<appender-ref ref="CONSOLE"/>-->
+    <!--<appender-ref ref="FILE"/>-->
+    <!--<appender-ref ref="ERRORFILE"/>-->
+    <!--</appender>-->
+
+    <logger name="org.springframework" level="error"/>
+    <logger name="com.zaxxer.hikari" level="error"/>
+
+
+    <root level="DEBUG">
+        <!--<appender-ref ref="AsyncFile"/>-->
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="ERRORFILE"/>
+
+    </root>
+
+</configuration>  
