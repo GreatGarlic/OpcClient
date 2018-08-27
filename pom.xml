@@ -28,6 +28,8 @@
     </dependencyManagement>
 
     <dependencies>
+
+        <!--OpenSCADA OPC Driver-->
         <dependency>
             <groupId>org.openscada.external</groupId>
             <artifactId>org.openscada.da.server.opc</artifactId>
