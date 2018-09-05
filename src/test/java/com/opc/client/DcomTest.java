@@ -26,7 +26,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-public class Test1 {
+public class DcomTest {
     private static int count;
     private static String host = "192.168.141.167";
     private static String domain = "";
@@ -42,7 +42,7 @@ public class Test1 {
     String item4 = "反应罐温度.Value";
     String item5 = "liuyuan.Value";
     String item6 = "channelone.device1.Value";
-    private Logger LOGGER = LoggerFactory.getLogger(Test1.class);
+    private Logger LOGGER = LoggerFactory.getLogger(DcomTest.class);
     private ServerList serverList;
     private ConnectionInformation ci;
 
