@@ -1,6 +1,5 @@
 package com.opc.client;
 
-import org.jinterop.dcom.common.JIException;
 import org.jinterop.dcom.core.JIVariant;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,24 +34,17 @@ public class Test1 {
     private static String user = "Administrator";
     private static String password = "123456";
     SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private Logger LOGGER = LoggerFactory.getLogger(Test1.class);
-    private ServerList serverList;
-    private ConnectionInformation ci;
-//    KingView.View.1
-    //Kepware.KEPServerEX.V6
-
     String item = "channelone.device1.group1.tag1";
     String item2 = "channelone.device1.tag3";
     String item3 = "channelone.device1.tag4";
-    String item4="反应罐温度.Value";
-    String item5="liuyuan.Value";
-    String item6="channelone.device1.Value";
-
-
-    private static void dumpItem(Item item) throws JIException {
-        System.out.println("[" + (++count) + "],ItemName:[" + item.getId()
-                + "],value:" + item.read(true).getValue());
-    }
+    //    KingView.View.1
+    //Kepware.KEPServerEX.V6
+    String item4 = "反应罐温度.Value";
+    String item5 = "liuyuan.Value";
+    String item6 = "channelone.device1.Value";
+    private Logger LOGGER = LoggerFactory.getLogger(Test1.class);
+    private ServerList serverList;
+    private ConnectionInformation ci;
 
     @Before
     public void getOpcServerList() throws Exception {
@@ -72,7 +64,7 @@ public class Test1 {
     }
 
     @Test
-    public void getOpcServerClient() {
+    public void syncReadOpcItem() {
         ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
         Server server = new Server(ci, exec);
 
@@ -93,7 +85,7 @@ public class Test1 {
     }
 
     @Test
-    public void asyncGetOpcServeItem() throws Exception {
+    public void asyncReadOpcItem() throws Exception {
         ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
         Server server = new Server(ci, exec);
         AutoReconnectController controller = new AutoReconnectController(server);
@@ -109,8 +101,7 @@ public class Test1 {
         access.addItem(item5, new DataCallback() {
             public void changed(Item item, ItemState itemstate) {
                 try {
-                    LOGGER.debug("获取时间:{} 标签值:{}", df.format(itemstate.getTimestamp().getTime()),
-                            itemstate.getValue().getObjectAsFloat());
+                    LOGGER.debug("获取时间:{} 标签值:{}", df.format(itemstate.getTimestamp().getTime()), itemstate.getValue().getObjectAsFloat());
                 } catch (Exception e) {
                     LOGGER.error("数据获取失败", e);
                 }
@@ -132,9 +123,8 @@ public class Test1 {
     }
 
 
-
     @Test
-    public void syncWriteOpcServeItem() throws Exception {
+    public void syncWriteAndAsyncReadOpcItem() throws Exception {
         ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
         Server server = new Server(ci, exec);
         AutoReconnectController controller = new AutoReconnectController(server);
@@ -151,8 +141,7 @@ public class Test1 {
         access.addItem(item5, new DataCallback() {
             public void changed(Item item, ItemState itemstate) {
                 try {
-                    LOGGER.debug("获取时间:{} 标签值:{}", df.format(itemstate.getTimestamp().getTime()),
-                            itemstate.getValue().getObjectAsFloat());
+                    LOGGER.debug("获取时间:{} 标签值:{}", df.format(itemstate.getTimestamp().getTime()), itemstate.getValue().getObjectAsFloat());
                 } catch (Exception e) {
                     LOGGER.error("数据获取失败", e);
                 }
@@ -164,25 +153,23 @@ public class Test1 {
         Group group = server.addGroup();
         Item item = group.addItem(item5);
 
-        while (true){
+        while (true) {
             Thread.sleep(1000);
             JIVariant value = new JIVariant(new Random().nextFloat());
             item.write(value);
         }
     }
+
     @Test
-    public void syncWriteOpcServeItem1() throws Exception {
+    public void syncWriteOpcItem() throws Exception {
         ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
         Server server = new Server(ci, exec);
         try {
             server.connect();
             Group group = server.addGroup();
             Item item = group.addItem(item5);
-            JIVariant value = new JIVariant(new Random().nextFloat());
+            JIVariant value = new JIVariant(41.37f);
             item.write(value);
-
-
-
         } catch (Exception e) {
             LOGGER.error("连接异常", e);
         }
