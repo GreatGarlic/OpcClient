@@ -31,18 +31,22 @@ public class Test1 {
     private static int count;
     private static String host = "192.168.141.167";
     private static String domain = "";
-    private static String progId = "Kepware.KEPServerEX.V6";
+    private static String progId = "KingView.View.1";
     private static String user = "Administrator";
     private static String password = "123456";
     SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private Logger LOGGER = LoggerFactory.getLogger(Test1.class);
     private ServerList serverList;
     private ConnectionInformation ci;
-
+//    KingView.View.1
+    //Kepware.KEPServerEX.V6
 
     String item = "channelone.device1.group1.tag1";
     String item2 = "channelone.device1.tag3";
     String item3 = "channelone.device1.tag4";
+    String item4="反应罐温度.Value";
+    String item5="liuyuan.Value";
+    String item6="channelone.device1.Value";
 
 
     private static void dumpItem(Item item) throws JIException {
@@ -75,12 +79,13 @@ public class Test1 {
         try {
             server.connect();
             Group group = server.addGroup();
-            Item item = group.addItem("channelone.device1.tag3");
+            Item item = group.addItem(item5);
+
             while (true) {
-                Thread.sleep(1000);
                 ItemState state = item.read(true);
+                Thread.sleep(1000);
                 LOGGER.debug("获取时间:{} 标签值:{}", df.format(state.getTimestamp().getTime()),
-                        state.getValue().getObjectAsDouble());
+                        state.getValue().getObjectAsFloat());
             }
         } catch (Exception e) {
             LOGGER.error("连接异常", e);
@@ -101,11 +106,11 @@ public class Test1 {
         /**
          * 只有Item的值有变化的时候才会触发CallBack函数
          */
-        access.addItem(item3, new DataCallback() {
+        access.addItem(item5, new DataCallback() {
             public void changed(Item item, ItemState itemstate) {
                 try {
                     LOGGER.debug("获取时间:{} 标签值:{}", df.format(itemstate.getTimestamp().getTime()),
-                            itemstate.getValue().getObjectAsDouble());
+                            itemstate.getValue().getObjectAsFloat());
                 } catch (Exception e) {
                     LOGGER.error("数据获取失败", e);
                 }
@@ -143,11 +148,11 @@ public class Test1 {
         /**
          * 只有Item的值有变化的时候才会触发CallBack函数
          */
-        access.addItem(item3, new DataCallback() {
+        access.addItem(item5, new DataCallback() {
             public void changed(Item item, ItemState itemstate) {
                 try {
                     LOGGER.debug("获取时间:{} 标签值:{}", df.format(itemstate.getTimestamp().getTime()),
-                            itemstate.getValue().getObjectAsDouble());
+                            itemstate.getValue().getObjectAsFloat());
                 } catch (Exception e) {
                     LOGGER.error("数据获取失败", e);
                 }
@@ -157,29 +162,29 @@ public class Test1 {
         access.bind();
 
         Group group = server.addGroup();
-        Item item = group.addItem(item3);
+        Item item = group.addItem(item5);
 
         while (true){
-            Thread.sleep(500);
-            JIVariant value = new JIVariant(new Random().nextDouble());
+            Thread.sleep(1000);
+            JIVariant value = new JIVariant(new Random().nextFloat());
             item.write(value);
         }
+    }
+    @Test
+    public void syncWriteOpcServeItem1() throws Exception {
+        ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
+        Server server = new Server(ci, exec);
+        try {
+            server.connect();
+            Group group = server.addGroup();
+            Item item = group.addItem(item5);
+            JIVariant value = new JIVariant(new Random().nextFloat());
+            item.write(value);
 
 
 
-
-
-//        CountDownLatch countDownLatch = new CountDownLatch(1);
-//        try {
-//            countDownLatch.await();
-//        } catch (InterruptedException e) {
-//            LOGGER.error("系统异常", e);
-//        }
-        /** 监听 结束 */
-//        access.unbind();
-//
-//        controller.disconnect();
-
-
+        } catch (Exception e) {
+            LOGGER.error("连接异常", e);
+        }
     }
 }
