@@ -27,7 +27,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 public class DcomTest {
-    private static String host = "192.168.153.167";
+    private static String host = "192.168.141.167";
     private static String domain = "";
     private static String progId = "Kepware.KEPServerEX.V6";
     private static String user = "Administrator";
