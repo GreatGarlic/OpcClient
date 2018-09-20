@@ -27,13 +27,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 public class DcomTest {
-    private static String host = "192.168.141.167";
+    private static String host = "192.168.153.167";
     private static String domain = "";
-    private static String progId = "KingView.View.1";
+    private static String progId = "Kepware.KEPServerEX.V6";
     private static String user = "Administrator";
     private static String password = "123456";
     SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    String item = "channelone.device1.group1.tag1";
+    String itemName = "channel1.device1.控制字1";
     String item2 = "channelone.device1.tag3";
     String item3 = "channelone.device1.tag4";
     //    KingView.View.1
@@ -70,13 +70,13 @@ public class DcomTest {
         try {
             server.connect();
             Group group = server.addGroup();
-            Item item = group.addItem(item5);
+            Item item = group.addItem(itemName);
 
             while (true) {
                 ItemState state = item.read(true);
                 Thread.sleep(1000);
                 LOGGER.debug("获取时间:{} 标签值:{}", df.format(state.getTimestamp().getTime()),
-                        state.getValue().getObjectAsFloat());
+                        state.getValue().getObjectAsShort());
             }
         } catch (Exception e) {
             LOGGER.error("连接异常", e);
@@ -137,10 +137,10 @@ public class DcomTest {
         /**
          * 只有Item的值有变化的时候才会触发CallBack函数
          */
-        access.addItem(item5, new DataCallback() {
+        access.addItem(itemName, new DataCallback() {
             public void changed(Item item, ItemState itemstate) {
                 try {
-                    LOGGER.debug("获取时间:{} 标签值:{}", df.format(itemstate.getTimestamp().getTime()), itemstate.getValue().getObjectAsFloat());
+                    LOGGER.debug("获取时间:{} 标签值:{}", df.format(itemstate.getTimestamp().getTime()), itemstate.getValue().getObjectAsShort());
                 } catch (Exception e) {
                     LOGGER.error("数据获取失败", e);
                 }
@@ -150,11 +150,11 @@ public class DcomTest {
         access.bind();
 
         Group group = server.addGroup();
-        Item item = group.addItem(item5);
+        Item item = group.addItem(itemName);
 
         while (true) {
             Thread.sleep(1000);
-            JIVariant value = new JIVariant(new Random().nextFloat());
+            JIVariant value = new JIVariant((short) new Random().nextInt(Short.MAX_VALUE + 1));
             item.write(value);
         }
     }
@@ -166,8 +166,8 @@ public class DcomTest {
         try {
             server.connect();
             Group group = server.addGroup();
-            Item item = group.addItem(item5);
-            JIVariant value = new JIVariant(41.37f);
+            Item item = group.addItem(itemName);
+            JIVariant value = new JIVariant(255);
             item.write(value);
         } catch (Exception e) {
             LOGGER.error("连接异常", e);
