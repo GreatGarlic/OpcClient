@@ -67,6 +67,7 @@ public class OpcClient {
                             getAllItemValue();
 
                         } catch (Exception e) {
+                            LOGGER.error("OpcServer连接错误,尝试重新连接", e);
                             isConnect = false;
                             if (server != null) {
                                 server.disconnect();
@@ -79,7 +80,7 @@ public class OpcClient {
             haha.setDaemon(true);
             haha.start();
         } catch (Exception e) {
-            LOGGER.error("OpcServer网络链接初始化错误", e);
+            LOGGER.error("OpcServer客户端初始化错误", e);
         }
     }
 

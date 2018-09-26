@@ -74,7 +74,7 @@ public class DcomTest {
             Item item = group.addItem(item5);
             while (true) {
                 ItemState state = item.read(true);
-                Thread.sleep(1000);
+                Thread.sleep(2000);
                 LOGGER.debug("获取时间:{} 标签值:{}", df.format(state.getTimestamp().getTime()),
                         state.getValue().getObjectAsInt());
             }
@@ -153,7 +153,7 @@ public class DcomTest {
         Item item = group.addItem(item5);
 
         while (true) {
-            Thread.sleep(1000);
+            Thread.sleep(2000);
             JIVariant value = new JIVariant((short) new Random().nextInt(Short.MAX_VALUE + 1));
             item.write(value);
         }
