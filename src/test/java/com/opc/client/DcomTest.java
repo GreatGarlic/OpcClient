@@ -66,10 +66,10 @@ public class DcomTest {
     public void syncReadOpcItem() {
         ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
         Server server = new Server(ci, exec);
-        AutoReconnectController controller = new AutoReconnectController(server);
-        controller.connect();
+
         try {
-            Thread.sleep(2);
+            server.connect();
+
             Group group = server.addGroup();
             Item item = group.addItem(item5);
             while (true) {
