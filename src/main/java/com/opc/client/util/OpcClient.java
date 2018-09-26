@@ -54,7 +54,7 @@ public class OpcClient {
             ci.setUser(appConfig.getUser());
             ci.setPassword(appConfig.getPassword());
             exec = Executors.newSingleThreadScheduledExecutor();
-
+            server = new Server(ci, exec);
             Thread haha = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -71,7 +71,6 @@ public class OpcClient {
                             isConnect = false;
                             if (server != null) {
                                 server.disconnect();
-                                server = null;
                             }
                         }
                     }
@@ -87,22 +86,21 @@ public class OpcClient {
     private void reconnect() throws Exception {
         if (server != null) {
             server.disconnect();
-            server = null;
         }
-        server = new Server(ci, exec);
         server.connect();
         Group group = server.addGroup();
+        group.clear();
+        group.remove();
 //            itemMap = group.addItems(appConfig.getItemNames());
+        group = server.addGroup();
         itemMap = group.addItems("闸2设定.Value");
         isConnect = true;
     }
 
 
     public String getAllItemValue() {
-
         String str = "";
         try {
-
             ItemState state = itemMap.get("闸2设定.Value").read(true);
 
             str = "标签值" + state.getValue().getObjectAsInt();
@@ -119,7 +117,6 @@ public class OpcClient {
     public void destroy() {
         if (server != null) {
             server.disconnect();
-            server = null;
         }
     }
 }
