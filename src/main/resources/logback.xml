@@ -61,7 +61,7 @@
 
     <logger name="org.springframework" level="error"/>
     <logger name="com.zaxxer.hikari" level="error"/>
-    <logger name="org.openscada" level="error"/>
+    <logger name="org.openscada" level="debug"/>
     <logger name="org.jinterop" level="error"/>
 
     <root level="DEBUG">

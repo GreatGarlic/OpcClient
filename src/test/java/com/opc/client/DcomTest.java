@@ -3,6 +3,7 @@ package com.opc.client;
 import org.jinterop.dcom.core.JIVariant;
 import org.junit.Before;
 import org.junit.Test;
+import org.openscada.opc.dcom.list.ClassDetails;
 import org.openscada.opc.lib.common.ConnectionInformation;
 import org.openscada.opc.lib.da.AccessBase;
 import org.openscada.opc.lib.da.Async20Access;
@@ -12,11 +13,14 @@ import org.openscada.opc.lib.da.Group;
 import org.openscada.opc.lib.da.Item;
 import org.openscada.opc.lib.da.ItemState;
 import org.openscada.opc.lib.da.Server;
+import org.openscada.opc.lib.list.Categories;
+import org.openscada.opc.lib.list.Category;
 import org.openscada.opc.lib.list.ServerList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -43,18 +47,17 @@ public class DcomTest {
 
     @Before
     public void getOpcServerList() throws Exception {
-//        serverList = new ServerList(host, user, password, domain);
-//        final Collection<ClassDetails> detailsList =
-//                serverList.listServersWithDetails(new Category[]{Categories.OPCDAServer20}, new Category[]{});
-//        for (final ClassDetails details : detailsList) {
-//            LOGGER.debug("ProgID:{}", details.getProgId());
-//            LOGGER.debug("ClsId:{}", details.getClsId());
-//            LOGGER.debug("Description:{}", details.getDescription());
-//        }
+        serverList = new ServerList(host, user, password, domain);
+        final Collection<ClassDetails> detailsList =
+                serverList.listServersWithDetails(new Category[]{Categories.OPCDAServer20}, new Category[]{});
+        for (final ClassDetails details : detailsList) {
+            LOGGER.debug("ProgID:{}", details.getProgId());
+            LOGGER.debug("ClsId:{}", details.getClsId());
+            LOGGER.debug("Description:{}", details.getDescription());
+        }
         ci = new ConnectionInformation();
         ci.setHost(host);
-        ci.setProgId(progId);
-//        ci.setClsid(serverList.getClsIdFromProgId(progId));
+        ci.setClsid(serverList.getClsIdFromProgId(progId));
         ci.setUser(user);
         ci.setPassword(password);
     }
@@ -63,12 +66,12 @@ public class DcomTest {
     public void syncReadOpcItem() {
         ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
         Server server = new Server(ci, exec);
-
+        AutoReconnectController controller = new AutoReconnectController(server);
+        controller.connect();
         try {
-            server.connect();
+            Thread.sleep(2);
             Group group = server.addGroup();
             Item item = group.addItem(item5);
-
             while (true) {
                 ItemState state = item.read(true);
                 Thread.sleep(1000);
