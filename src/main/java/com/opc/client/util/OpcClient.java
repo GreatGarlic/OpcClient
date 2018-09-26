@@ -29,12 +29,13 @@ public class OpcClient {
     @Autowired
     AppConfig appConfig;
     private ConnectionInformation ci;
-    private volatile Server server;
-    private Map<String, Item> itemMap;
+    private Server server;
     private Logger LOGGER = LoggerFactory.getLogger(OpcClient.class);
     private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private ScheduledExecutorService exec;
     private volatile boolean isConnect = false;
+    private Group group;
+    private Map<String, Item> itemMap;
 
     @PostConstruct
     public void init() {
@@ -87,12 +88,13 @@ public class OpcClient {
         if (server != null) {
             server.disconnect();
         }
+        if (group != null) {
+            group.clear();
+            group.remove();
+        }
         server.connect();
-        Group group = server.addGroup();
-        group.clear();
-        group.remove();
-//            itemMap = group.addItems(appConfig.getItemNames());
         group = server.addGroup();
+//            itemMap = group.addItems(appConfig.getItemNames());
         itemMap = group.addItems("闸2设定.Value");
         isConnect = true;
     }
