@@ -14,6 +14,7 @@ import org.openscada.opc.lib.list.ServerList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -56,35 +57,30 @@ public class OpcClient {
             ci.setPassword(appConfig.getPassword());
             exec = Executors.newSingleThreadScheduledExecutor();
             server = new Server(ci, exec);
-            Thread haha = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    while (true) {
-                        try {
-                            Thread.sleep(2000);
-                            if (!isConnect) {
-                                reconnect();
-                            }
-                            getAllItemValue();
-
-                        } catch (Exception e) {
-                            LOGGER.error("OpcServer连接错误,尝试重新连接", e);
-                            isConnect = false;
-                            if (server != null) {
-                                server.disconnect();
-                            }
-                        }
-                    }
-                }
-            });
-            haha.setDaemon(true);
-            haha.start();
         } catch (Exception e) {
             LOGGER.error("OpcServer客户端初始化错误", e);
         }
     }
 
-    private void reconnect() throws Exception {
+    @Scheduled(fixedRate = 2000)
+    public void reconnectHandlerTaskExecutor() {
+        try {
+            if (!isConnect) {
+                connect();
+            }
+            getAllItemValue();
+
+        } catch (Exception e) {
+            LOGGER.error("OpcServer连接错误,尝试重新连接", e);
+            isConnect = false;
+            if (server != null) {
+                server.disconnect();
+            }
+        }
+    }
+
+
+    private void connect() throws Exception {
         if (server != null) {
             server.disconnect();
         }
