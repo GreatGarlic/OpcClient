@@ -62,7 +62,7 @@ public class OpcClient {
         }
     }
 
-    @Scheduled(fixedRate = 2000)
+    @Scheduled(fixedDelay = 2000)
     public void reconnectHandlerTaskExecutor() {
         try {
             if (!isConnect) {
