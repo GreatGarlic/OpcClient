@@ -161,17 +161,17 @@ public class OpcClient {
 
     }
 
-    public void setItemValue(FieldAndItem fieldAndItem, String plcNumber, Object value) {
+    public void setItemValue(FieldAndItem fieldAndItem, String plcNumber, String value) {
         try {
             String itemName = fieldAndItem.getItemNameByPlcNumber(plcNumber);
             Item item = itemMap.get(itemName);
             JIVariant itemValue;
             switch (fieldAndItem.getOpcDataType()) {
                 case Short:
-                    itemValue = new JIVariant((Short) value);
+                    itemValue = new JIVariant(Short.valueOf(value));
                     break;
                 case Int:
-                    itemValue = new JIVariant((Integer) value);
+                    itemValue = new JIVariant(Integer.valueOf(value));
                     break;
                 default:
                     itemValue = new JIVariant("");

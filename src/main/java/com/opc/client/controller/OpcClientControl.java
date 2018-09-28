@@ -3,6 +3,7 @@ package com.opc.client.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opc.client.config.AppConfig;
+import com.opc.client.model.FieldAndItem;
 import com.opc.client.model.OpcEntity;
 import com.opc.client.util.OpcClient;
 import io.swagger.annotations.Api;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -36,6 +38,19 @@ public class OpcClientControl {
     public String getAllItemValue(@PathVariable String plcNumber) {
         //转换成OpcServer配置的plc序号
         String opcPlcNumber = appConfig.getPlcNumberDictionary().get(plcNumber);
+        List<OpcEntity> plcItemValues = opcClient.getPlcItemValuesByPlcNumber(opcPlcNumber);
+
+        return "";
+    }
+
+    @ApiOperation(value = "设置指定plc的参数", notes = "设置指定plc的参数")
+    @RequestMapping(path = "/items/value/", method = RequestMethod.PUT)
+    public String setItemValue(@RequestParam String plcNumber, @RequestParam FieldAndItem itemName, @RequestParam String itemValue) {
+        //转换成OpcServer配置的plc序号
+        String opcPlcNumber = appConfig.getPlcNumberDictionary().get(plcNumber);
+        opcClient.setItemValue(itemName,plcNumber,itemValue);
+
+
         List<OpcEntity> plcItemValues = opcClient.getPlcItemValuesByPlcNumber(opcPlcNumber);
 
         return "";
