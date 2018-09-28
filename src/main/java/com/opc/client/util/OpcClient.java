@@ -75,8 +75,8 @@ public class OpcClient {
             if (!isConnect) {
                 connect();
             }
-            Map<String, List<OpcEntity>> allPlcItemValues = getAllItemValue();
-            printPlcItemLog(allPlcItemValues);
+            Map<String, List<OpcEntity>> allPlcItemValues = getAllPlcItemValues();
+            printAllPlcItemLog(allPlcItemValues);
         } catch (Exception e) {
             LOGGER.error("OpcServer连接错误,尝试重新连接", e);
             isConnect = false;
@@ -104,30 +104,36 @@ public class OpcClient {
     }
 
 
-    public Map<String, List<OpcEntity>> getAllItemValue() {
+    public Map<String, List<OpcEntity>> getAllPlcItemValues() {
         Map<String, List<OpcEntity>> allPlcItemValues = new HashMap<>();
+        String[] plcNumbers = appConfig.getPlcNumbers();
+        for (String plcNumber : plcNumbers) {
+            List<OpcEntity> plcItemValues = getPlcItemValuesByPlcNumber(plcNumber);
+            allPlcItemValues.put(plcNumber, plcItemValues);
+        }
+        return allPlcItemValues;
+    }
+
+
+    public List<OpcEntity> getPlcItemValuesByPlcNumber(String plcNumber) {
+        List<OpcEntity> plcItemValues = new ArrayList<>();
         try {
-            String[] plcNumbers = appConfig.getPlcNumbers();
-            for (String plcNumber : plcNumbers) {
-                Set<Map.Entry<String, FieldAndItem>> plcItemNames =
-                        FieldAndItem.getAllItemsByPlcNumber(plcNumber).entrySet();
-                List<OpcEntity> plcItemValues = new ArrayList<>();
-                for (Map.Entry<String, FieldAndItem> item : plcItemNames) {
-                    ItemState state = itemMap.get(item.getKey()).read(true);
-                    String timestamp = formatter.print(new DateTime(state.getTimestamp().getTime()));
-                    Object value = state.getValue().getObject();
-                    plcItemValues.add(new OpcEntity(timestamp, item.getValue(), value));
-                }
-                allPlcItemValues.put(plcNumber, plcItemValues);
+            Set<Map.Entry<String, FieldAndItem>> plcItemNames =
+                    FieldAndItem.getAllItemsByPlcNumber(plcNumber).entrySet();
+            for (Map.Entry<String, FieldAndItem> item : plcItemNames) {
+                ItemState state = itemMap.get(item.getKey()).read(true);
+                String timestamp = formatter.print(new DateTime(state.getTimestamp().getTime()));
+                Object value = state.getValue().getObject();
+                plcItemValues.add(new OpcEntity(timestamp, item.getValue(), value));
             }
         } catch (Exception e) {
             LOGGER.error("获取变量数据出错", e);
             isConnect = false;
         }
-        return allPlcItemValues;
+        return plcItemValues;
     }
 
-    private void printPlcItemLog(Map<String, List<OpcEntity>> allPlcItemValues) {
+    private void printAllPlcItemLog(Map<String, List<OpcEntity>> allPlcItemValues) {
 
         for (Map.Entry<String, List<OpcEntity>> plcItemValue : allPlcItemValues.entrySet()) {
             String plcNumber = plcItemValue.getKey();
