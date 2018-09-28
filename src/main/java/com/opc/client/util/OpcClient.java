@@ -4,6 +4,7 @@ package com.opc.client.util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opc.client.config.AppConfig;
 import com.opc.client.model.FieldAndItem;
+import com.opc.client.model.OpcDataType;
 import com.opc.client.model.OpcEntity;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -78,8 +79,8 @@ public class OpcClient {
             if (!isConnect) {
                 connect();
             }
-            getAllItemValue();
-
+            Map<String, List<OpcEntity>> allPlcItemValues = getAllItemValue();
+            printPlcItemLog(allPlcItemValues);
         } catch (Exception e) {
             LOGGER.error("OpcServer连接错误,尝试重新连接", e);
             isConnect = false;
@@ -119,7 +120,6 @@ public class OpcClient {
                     ItemState state = itemMap.get(item.getKey()).read(true);
                     String timestamp = formatter.print(new DateTime(state.getTimestamp().getTime()));
                     Object value = state.getValue().getObject();
-//                    LOGGER.debug("获取时间:{} 标签值:{}", timestamp, value);
                     plcItemValues.add(new OpcEntity(timestamp, item.getValue(), value));
                 }
                 allPlcItemValues.put(plcNumber, plcItemValues);
@@ -129,6 +129,32 @@ public class OpcClient {
             isConnect = false;
         }
         return allPlcItemValues;
+    }
+
+    private void printPlcItemLog(Map<String, List<OpcEntity>> allPlcItemValues) {
+
+        for (Map.Entry<String, List<OpcEntity>> plcItemValue : allPlcItemValues.entrySet()) {
+            String plcNumber = plcItemValue.getKey();
+            List<OpcEntity> plcItem = plcItemValue.getValue();
+            for (OpcEntity entity : plcItem) {
+                Object value=null;
+                OpcDataType opcDataType = entity.getFieldAndItem().getOpcDataType();
+                switch (opcDataType) {
+                    case Short:
+                        value= (Short) entity.getValue();
+                        break;
+                    case Int:
+                        value= (Integer) entity.getValue();
+                        break;
+                    default:
+                        break;
+                }
+                LOGGER.debug("PLC编号:{} 获取时间:{} 变量名:{} 变量值:{}", plcNumber, entity.getTimestamp(),
+                        entity.getFieldAndItem().getItemName(),value);
+            }
+
+        }
+
     }
 
     @PreDestroy

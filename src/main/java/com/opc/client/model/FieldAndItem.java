@@ -9,25 +9,27 @@ import java.util.Map;
  * @author 刘源
  */
 public enum FieldAndItem {
-    voltmeter("电压表"),
-    ammeter("电流表"),
-    controlWord("控制字"),
-    setCacheValue("设定缓存值"),
-    warningTimeCache("预警时间缓存"),
-    opening("开度"),
-    load("荷重"),
-    load90("荷重九十"),
-    load110("荷重一百一"),
-    motorFailure("电机故障"),
-    upperLimit("上限"),
-    lowerLimit("下限"),
-    setting("设定"),
-    warning("预警");
+    voltmeter("电压表",OpcDataType.Int),
+    ammeter("电流表",OpcDataType.Int),
+    controlWord("控制字",OpcDataType.Int),
+    setCacheValue("设定缓存值",OpcDataType.Int),
+    warningTimeCache("预警时间缓存",OpcDataType.Int),
+    opening("开度",OpcDataType.Int),
+    load("荷重",OpcDataType.Int),
+    load90("荷重九十",OpcDataType.Int),
+    load110("荷重一百一",OpcDataType.Int),
+    motorFailure("电机故障",OpcDataType.Int),
+    upperLimit("上限",OpcDataType.Int),
+    lowerLimit("下限",OpcDataType.Int),
+    setting("设定",OpcDataType.Int),
+    warning("预警",OpcDataType.Int);
 
     private String itemName;
+    private OpcDataType opcDataType;
 
-    FieldAndItem(String itemName) {
+    FieldAndItem(String itemName,OpcDataType opcDataType) {
         this.itemName = itemName;
+        this.opcDataType=opcDataType;
     }
 
     public static FieldAndItem[] getAllItems() {
@@ -70,4 +72,7 @@ public enum FieldAndItem {
         return this.itemName + plcNumber + ".Value";
     }
 
+    public OpcDataType getOpcDataType() {
+        return opcDataType;
+    }
 }
