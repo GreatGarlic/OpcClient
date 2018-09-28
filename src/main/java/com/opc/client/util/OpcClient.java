@@ -1,7 +1,6 @@
 package com.opc.client.util;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opc.client.config.AppConfig;
 import com.opc.client.model.FieldAndItem;
 import com.opc.client.model.OpcDataType;
@@ -39,14 +38,11 @@ import java.util.concurrent.ScheduledExecutorService;
 public class OpcClient {
     @Autowired
     AppConfig appConfig;
-    private ConnectionInformation ci;
     private Server server;
     private Logger LOGGER = LoggerFactory.getLogger(OpcClient.class);
-    private ScheduledExecutorService exec;
     private volatile boolean isConnect = false;
     private Group group;
     private Map<String, Item> itemMap;
-    private ObjectMapper objectMapper = new ObjectMapper();
     private DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
 
     @PostConstruct
@@ -61,12 +57,12 @@ public class OpcClient {
                 LOGGER.debug("ClsId:{}", details.getClsId());
                 LOGGER.debug("Description:{}", details.getDescription());
             }
-            ci = new ConnectionInformation();
+            ConnectionInformation ci = new ConnectionInformation();
             ci.setHost(appConfig.getHost());
             ci.setClsid(serverList.getClsIdFromProgId(appConfig.getProgId()));
             ci.setUser(appConfig.getUser());
             ci.setPassword(appConfig.getPassword());
-            exec = Executors.newSingleThreadScheduledExecutor();
+            ScheduledExecutorService exec = Executors.newSingleThreadScheduledExecutor();
             server = new Server(ci, exec);
         } catch (Exception e) {
             LOGGER.error("OpcServer客户端初始化错误", e);
@@ -137,20 +133,21 @@ public class OpcClient {
             String plcNumber = plcItemValue.getKey();
             List<OpcEntity> plcItem = plcItemValue.getValue();
             for (OpcEntity entity : plcItem) {
-                Object value=null;
+//                Object value=null;
+                Object value = entity.getValue();
                 OpcDataType opcDataType = entity.getFieldAndItem().getOpcDataType();
                 switch (opcDataType) {
                     case Short:
-                        value= (Short) entity.getValue();
+//                        value= (Short) entity.getValue();
                         break;
                     case Int:
-                        value= (Integer) entity.getValue();
+//                        value= (Integer) entity.getValue();
                         break;
                     default:
                         break;
                 }
                 LOGGER.debug("PLC编号:{} 获取时间:{} 变量名:{} 变量值:{}", plcNumber, entity.getTimestamp(),
-                        entity.getFieldAndItem().getItemName(),value);
+                        entity.getFieldAndItem().getItemName(), value);
             }
 
         }
