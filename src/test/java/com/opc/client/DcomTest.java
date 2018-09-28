@@ -1,9 +1,14 @@
 package com.opc.client;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.opc.client.config.AppConfig;
+import com.opc.client.model.FieldAndItem;
 import org.jinterop.dcom.core.JIVariant;
-import org.junit.Before;
 import org.junit.Test;
-import org.openscada.opc.dcom.list.ClassDetails;
+import org.junit.runner.RunWith;
 import org.openscada.opc.lib.common.ConnectionInformation;
 import org.openscada.opc.lib.da.AccessBase;
 import org.openscada.opc.lib.da.Async20Access;
@@ -13,19 +18,21 @@ import org.openscada.opc.lib.da.Group;
 import org.openscada.opc.lib.da.Item;
 import org.openscada.opc.lib.da.ItemState;
 import org.openscada.opc.lib.da.Server;
-import org.openscada.opc.lib.list.Categories;
-import org.openscada.opc.lib.list.Category;
 import org.openscada.opc.lib.list.ServerList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+@RunWith(SpringRunner.class) // SpringJUnit支持，由此引入Spring-Test框架支持！
+@SpringBootTest(classes = StartProgram.class)
 public class DcomTest {
     private static String host = "192.168.141.176";
     private static String domain = "";
@@ -41,26 +48,28 @@ public class DcomTest {
 
     String item5 = "闸2设定.Value";
     String item6 = "channelone.device1.Value";
+    @Autowired
+    AppConfig appConfig;
     private Logger LOGGER = LoggerFactory.getLogger(DcomTest.class);
     private ServerList serverList;
     private ConnectionInformation ci;
 
-    @Before
-    public void getOpcServerList() throws Exception {
-        serverList = new ServerList(host, user, password, domain);
-        final Collection<ClassDetails> detailsList =
-                serverList.listServersWithDetails(new Category[]{Categories.OPCDAServer20}, new Category[]{});
-        for (final ClassDetails details : detailsList) {
-            LOGGER.debug("ProgID:{}", details.getProgId());
-            LOGGER.debug("ClsId:{}", details.getClsId());
-            LOGGER.debug("Description:{}", details.getDescription());
-        }
-        ci = new ConnectionInformation();
-        ci.setHost(host);
-        ci.setClsid(serverList.getClsIdFromProgId(progId));
-        ci.setUser(user);
-        ci.setPassword(password);
-    }
+//    @Before
+//    public void getOpcServerList() throws Exception {
+//        serverList = new ServerList(host, user, password, domain);
+//        final Collection<ClassDetails> detailsList =
+//                serverList.listServersWithDetails(new Category[]{Categories.OPCDAServer20}, new Category[]{});
+//        for (final ClassDetails details : detailsList) {
+//            LOGGER.debug("ProgID:{}", details.getProgId());
+//            LOGGER.debug("ClsId:{}", details.getClsId());
+//            LOGGER.debug("Description:{}", details.getDescription());
+//        }
+//        ci = new ConnectionInformation();
+//        ci.setHost(host);
+//        ci.setClsid(serverList.getClsIdFromProgId(progId));
+//        ci.setUser(user);
+//        ci.setPassword(password);
+//    }
 
     @Test
     public void syncReadOpcItem() {
@@ -70,7 +79,7 @@ public class DcomTest {
         try {
             server.connect();
 
-            Group group = server.addGroup();
+            Group group = server.addGroup("111");
             Item item = group.addItem(item5);
             while (true) {
                 ItemState state = item.read(true);
@@ -100,7 +109,8 @@ public class DcomTest {
         access.addItem(item5, new DataCallback() {
             public void changed(Item item, ItemState itemstate) {
                 try {
-                    LOGGER.debug("获取时间:{} 标签值:{}", df.format(itemstate.getTimestamp().getTime()), itemstate.getValue().getObjectAsInt());
+                    LOGGER.debug("获取时间:{} 标签值:{}", df.format(itemstate.getTimestamp().getTime()),
+                            itemstate.getValue().getObjectAsInt());
                 } catch (Exception e) {
                     LOGGER.error("数据获取失败", e);
                 }
@@ -140,7 +150,8 @@ public class DcomTest {
         access.addItem(item5, new DataCallback() {
             public void changed(Item item, ItemState itemstate) {
                 try {
-                    LOGGER.debug("获取时间:{} 标签值:{}", df.format(itemstate.getTimestamp().getTime()), itemstate.getValue().getObjectAsInt());
+                    LOGGER.debug("获取时间:{} 标签值:{}", df.format(itemstate.getTimestamp().getTime()),
+                            itemstate.getValue().getObjectAsInt());
                 } catch (Exception e) {
                     LOGGER.error("数据获取失败", e);
                 }
@@ -173,4 +184,41 @@ public class DcomTest {
             LOGGER.error("连接异常", e);
         }
     }
+
+    @Test
+    public void test1() {
+
+        String[] arrayStr = appConfig.getPlcNumberDictionary().values().toArray(new String[0]);
+
+
+        String[] itemName = FieldAndItem.getAllItemsByPlcNumbers(arrayStr).toArray(new String[0]);
+
+        for (String s : itemName) {
+            System.out.println(s);
+
+        }
+
+    }
+
+    @Test
+    public void test2() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ArrayNode arrayNode = objectMapper.createArrayNode();
+        ObjectNode objectNode = objectMapper.createObjectNode();
+        objectNode.put("哈哈", "嘿嘿");
+        ObjectNode objectNode1 = objectMapper.createObjectNode();
+        objectNode1.put("哈哈", "刘源");
+        arrayNode.add(objectNode);
+        arrayNode.add(objectNode1);
+        String jsonStr = objectMapper.writeValueAsString(arrayNode);
+        System.out.println(jsonStr);
+        ArrayNode arrayNode1 = (ArrayNode) objectMapper.readTree(jsonStr);
+        for (JsonNode haha : arrayNode1) {
+            System.out.println(haha.get("哈哈").asText());
+        }
+
+
+
+    }
+
 }

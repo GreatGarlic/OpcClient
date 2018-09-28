@@ -3,6 +3,9 @@ app-config:
   progId: KingView.View.1
   user: Administrator
   password: 123456
+  #PLC编号映射
+  plcNumberDictionary:
+    767678: 111
 server:
   # WebServer bind port
   port: 9010

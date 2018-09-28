@@ -1,7 +1,11 @@
 package com.opc.client.util;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.opc.client.config.AppConfig;
+import com.opc.client.model.FieldAndItem;
 import org.openscada.opc.dcom.list.ClassDetails;
 import org.openscada.opc.lib.common.ConnectionInformation;
 import org.openscada.opc.lib.da.Group;
@@ -21,6 +25,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -37,6 +42,7 @@ public class OpcClient {
     private volatile boolean isConnect = false;
     private Group group;
     private Map<String, Item> itemMap;
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @PostConstruct
     public void init() {
@@ -90,15 +96,35 @@ public class OpcClient {
         }
         server.connect();
         group = server.addGroup();
-//            itemMap = group.addItems(appConfig.getItemNames());
-        itemMap = group.addItems("闸2设定.Value");
+        String[] itemNames = FieldAndItem.getAllItemsByPlcNumbers(appConfig.getPlcNumbers()).toArray(new String[0]);
+        itemMap = group.addItems(itemNames);
+//        itemMap = group.addItems("闸2设定.Value");
         isConnect = true;
     }
 
 
     public String getAllItemValue() {
         String str = "";
+
         try {
+            ArrayNode arrayNode=objectMapper.createObjectNode();
+            String[] plcNumbers =appConfig.getPlcNumbers();
+            for(String plcNumber :plcNumbers){
+                List<String> plcItemNames= FieldAndItem.getAllItemsByPlcNumber(plcNumber);
+                ObjectNode plcItemValues= objectMapper.createObjectNode();
+                for(String itemName:plcItemNames){
+
+
+
+                    plcItemValues.put()
+                }
+                arrayNode.add(plcItemValues);
+            }
+
+
+
+
+
             ItemState state = itemMap.get("闸2设定.Value").read(true);
 
             str = "标签值" + state.getValue().getObjectAsInt();
