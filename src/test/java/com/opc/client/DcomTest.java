@@ -11,6 +11,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.openscada.opc.lib.common.ConnectionInformation;
 import org.openscada.opc.lib.da.AccessBase;
 import org.openscada.opc.lib.da.Async20Access;
@@ -24,6 +25,8 @@ import org.openscada.opc.lib.list.ServerList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,8 +37,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-//@RunWith(SpringRunner.class) // SpringJUnit支持，由此引入Spring-Test框架支持！
-//@SpringBootTest(classes = StartProgram.class)
+@RunWith(SpringRunner.class) // SpringJUnit支持，由此引入Spring-Test框架支持！
+@SpringBootTest(classes = StartProgram.class)
 public class DcomTest {
     private static String host = "192.168.141.176";
     private static String domain = "";
@@ -242,13 +245,16 @@ public class DcomTest {
         heihei.put("nicai", FieldAndItem.ammeter);
         haha.putAll(heihei);
 
-        for (Map.Entry<String, FieldAndItem> entity:haha.entrySet()) {
+        for (Map.Entry<String, FieldAndItem> entity : haha.entrySet()) {
 
             System.out.println(entity.getKey());
             System.out.println(entity.getValue().getItemName());
 
         }
+    }
 
+    @Test
+    public void test5() {
 
     }
 
