@@ -48,7 +48,8 @@ public class OpcClientControl {
     public String setItemValue(@RequestParam String plcNumber, @RequestParam FieldAndItem itemName, @RequestParam String itemValue) {
         //转换成OpcServer配置的plc序号
         String opcPlcNumber = appConfig.getPlcNumberDictionary().get(plcNumber);
-        opcClient.setItemValue(itemName,plcNumber,itemValue);
+
+        opcClient.setItemValue(itemName,opcPlcNumber,itemValue);
 
 
         List<OpcEntity> plcItemValues = opcClient.getPlcItemValuesByPlcNumber(opcPlcNumber);

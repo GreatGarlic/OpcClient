@@ -53,7 +53,7 @@ public class DcomTest {
     //    KingView.View.1
     //Kepware.KEPServerEX.V6
 
-    String item5 = "设定111.Value";
+    String item5 = "开度111.Value";
     String item6 = "channelone.device1.Value";
 //    @Autowired
     AppConfig appConfig;
