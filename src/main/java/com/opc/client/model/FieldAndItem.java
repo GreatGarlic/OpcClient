@@ -1,7 +1,7 @@
 package com.opc.client.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Opc变量名称.
@@ -40,10 +40,10 @@ public enum FieldAndItem {
      * @param plcNumber
      * @return
      */
-    public static List<String> getAllItemsByPlcNumber(String plcNumber) {
-        List<String> allItemsName = new ArrayList<String>();
+    public static Map<String,FieldAndItem> getAllItemsByPlcNumber(String plcNumber) {
+        Map<String,FieldAndItem>allItemsName=new HashMap<>();
         for (FieldAndItem item : values()) {
-            allItemsName.add(item.getItemNameByPlcNumber(plcNumber));
+            allItemsName.put(item.getItemNameByPlcNumber(plcNumber),item);
         }
         return allItemsName;
     }
@@ -54,10 +54,10 @@ public enum FieldAndItem {
      * @param plcNumbers
      * @return
      */
-    public static List<String> getAllItemsByPlcNumbers(String[] plcNumbers) {
-        List<String> allPlcItemsName = new ArrayList<String>();
+    public static Map<String,FieldAndItem> getAllItemsByPlcNumbers(String[] plcNumbers) {
+        Map<String,FieldAndItem> allPlcItemsName = new HashMap<>();
         for (String plcNumber : plcNumbers) {
-            allPlcItemsName.addAll(getAllItemsByPlcNumber(plcNumber));
+            allPlcItemsName.putAll(getAllItemsByPlcNumber(plcNumber));
         }
         return allPlcItemsName;
     }

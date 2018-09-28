@@ -2,10 +2,12 @@ package com.opc.client.util;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.opc.client.config.AppConfig;
 import com.opc.client.model.FieldAndItem;
+import com.opc.client.model.OpcEntity;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.openscada.opc.dcom.list.ClassDetails;
 import org.openscada.opc.lib.common.ConnectionInformation;
 import org.openscada.opc.lib.da.Group;
@@ -23,10 +25,12 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -37,12 +41,12 @@ public class OpcClient {
     private ConnectionInformation ci;
     private Server server;
     private Logger LOGGER = LoggerFactory.getLogger(OpcClient.class);
-    private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private ScheduledExecutorService exec;
     private volatile boolean isConnect = false;
     private Group group;
     private Map<String, Item> itemMap;
     private ObjectMapper objectMapper = new ObjectMapper();
+    private DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
 
     @PostConstruct
     public void init() {
@@ -96,45 +100,35 @@ public class OpcClient {
         }
         server.connect();
         group = server.addGroup();
-        String[] itemNames = FieldAndItem.getAllItemsByPlcNumbers(appConfig.getPlcNumbers()).toArray(new String[0]);
+        Map<String, FieldAndItem> allPlcItemsName = FieldAndItem.getAllItemsByPlcNumbers(appConfig.getPlcNumbers());
+        String[] itemNames = allPlcItemsName.keySet().toArray(new String[0]);
         itemMap = group.addItems(itemNames);
-//        itemMap = group.addItems("闸2设定.Value");
         isConnect = true;
     }
 
 
-    public String getAllItemValue() {
-        String str = "";
-
+    public Map<String, List<OpcEntity>> getAllItemValue() {
+        Map<String, List<OpcEntity>> allPlcItemValues = new HashMap<>();
         try {
-            ArrayNode arrayNode=objectMapper.createObjectNode();
-            String[] plcNumbers =appConfig.getPlcNumbers();
-            for(String plcNumber :plcNumbers){
-                List<String> plcItemNames= FieldAndItem.getAllItemsByPlcNumber(plcNumber);
-                ObjectNode plcItemValues= objectMapper.createObjectNode();
-                for(String itemName:plcItemNames){
-
-
-
-                    plcItemValues.put()
+            String[] plcNumbers = appConfig.getPlcNumbers();
+            for (String plcNumber : plcNumbers) {
+                Set<Map.Entry<String, FieldAndItem>> plcItemNames =
+                        FieldAndItem.getAllItemsByPlcNumber(plcNumber).entrySet();
+                List<OpcEntity> plcItemValues = new ArrayList<>();
+                for (Map.Entry<String, FieldAndItem> item : plcItemNames) {
+                    ItemState state = itemMap.get(item.getKey()).read(true);
+                    String timestamp = formatter.print(new DateTime(state.getTimestamp().getTime()));
+                    Object value = state.getValue().getObject();
+//                    LOGGER.debug("获取时间:{} 标签值:{}", timestamp, value);
+                    plcItemValues.add(new OpcEntity(timestamp, item.getValue(), value));
                 }
-                arrayNode.add(plcItemValues);
+                allPlcItemValues.put(plcNumber, plcItemValues);
             }
-
-
-
-
-
-            ItemState state = itemMap.get("闸2设定.Value").read(true);
-
-            str = "标签值" + state.getValue().getObjectAsInt();
-            LOGGER.debug("获取时间:{} 标签值:{}", df.format(state.getTimestamp().getTime()),
-                    state.getValue().getObjectAsInt());
         } catch (Exception e) {
             LOGGER.error("获取变量数据出错", e);
             isConnect = false;
         }
-        return str;
+        return allPlcItemValues;
     }
 
     @PreDestroy

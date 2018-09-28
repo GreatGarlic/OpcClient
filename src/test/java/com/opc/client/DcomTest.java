@@ -7,8 +7,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.opc.client.config.AppConfig;
 import com.opc.client.model.FieldAndItem;
 import org.jinterop.dcom.core.JIVariant;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.openscada.opc.lib.common.ConnectionInformation;
 import org.openscada.opc.lib.da.AccessBase;
 import org.openscada.opc.lib.da.Async20Access;
@@ -22,17 +24,18 @@ import org.openscada.opc.lib.list.ServerList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
-@RunWith(SpringRunner.class) // SpringJUnit支持，由此引入Spring-Test框架支持！
-@SpringBootTest(classes = StartProgram.class)
+//@RunWith(SpringRunner.class) // SpringJUnit支持，由此引入Spring-Test框架支持！
+//@SpringBootTest(classes = StartProgram.class)
 public class DcomTest {
     private static String host = "192.168.141.176";
     private static String domain = "";
@@ -191,7 +194,7 @@ public class DcomTest {
         String[] arrayStr = appConfig.getPlcNumberDictionary().values().toArray(new String[0]);
 
 
-        String[] itemName = FieldAndItem.getAllItemsByPlcNumbers(arrayStr).toArray(new String[0]);
+        String[] itemName = FieldAndItem.getAllItemsByPlcNumbers(arrayStr).keySet().toArray(new String[0]);
 
         for (String s : itemName) {
             System.out.println(s);
@@ -216,7 +219,35 @@ public class DcomTest {
         for (JsonNode haha : arrayNode1) {
             System.out.println(haha.get("哈哈").asText());
         }
+    }
 
+    @Test
+    public void test3() {
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+        System.out.println(formatter.print(new DateTime(new Date())));
+
+
+        System.out.println(new DateTime(new Date()).toString("yyyy-MM-dd HH:mm:ss"));
+
+    }
+
+    @Test
+    public void test4() {
+        HashMap<String, FieldAndItem> haha = new HashMap<>();
+        haha.put("haha", FieldAndItem.setCacheValue);
+        haha.put("heihei", FieldAndItem.lowerLimit);
+
+        HashMap<String, FieldAndItem> heihei = new HashMap<>();
+        heihei.put("liuyuan", FieldAndItem.controlWord);
+        heihei.put("nicai", FieldAndItem.ammeter);
+        haha.putAll(heihei);
+
+        for (Map.Entry<String, FieldAndItem> entity:haha.entrySet()) {
+
+            System.out.println(entity.getKey());
+            System.out.println(entity.getValue().getItemName());
+
+        }
 
 
     }
