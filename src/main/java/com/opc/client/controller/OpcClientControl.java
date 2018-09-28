@@ -2,6 +2,8 @@ package com.opc.client.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.opc.client.config.AppConfig;
+import com.opc.client.model.OpcEntity;
 import com.opc.client.util.OpcClient;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @Api(tags = "PlcManager", description = "Plc管理")
 @RestController
 @RequestMapping(path = "/api")
@@ -21,15 +25,19 @@ public class OpcClientControl {
 
     @Autowired
     OpcClient opcClient;
+    @Autowired
+    AppConfig appConfig;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
 
-    @ApiOperation(value = "获取plc所有参数", notes = "获取plc所有参数")
+    @ApiOperation(value = "获取指定plc所有参数", notes = "获取指定plc所有参数")
     @RequestMapping(path = "/items/value/{plcNumber}", method = RequestMethod.GET)
     public String getAllItemValue(@PathVariable String plcNumber) {
+        //转换成OpcServer配置的plc序号
+        String opcPlcNumber = appConfig.getPlcNumberDictionary().get(plcNumber);
+        List<OpcEntity> plcItemValues = opcClient.getPlcItemValuesByPlcNumber(opcPlcNumber);
 
-        opcClient.getPlcItemValuesByPlcNumber(plcNumber);
         return "";
     }
 

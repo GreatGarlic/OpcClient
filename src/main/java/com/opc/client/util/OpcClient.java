@@ -5,6 +5,7 @@ import com.opc.client.config.AppConfig;
 import com.opc.client.model.FieldAndItem;
 import com.opc.client.model.OpcDataType;
 import com.opc.client.model.OpcEntity;
+import org.jinterop.dcom.core.JIVariant;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -158,6 +159,32 @@ public class OpcClient {
 
         }
 
+    }
+
+    public void setItemValue(FieldAndItem fieldAndItem, String plcNumber, Object value) {
+        try {
+            String itemName = fieldAndItem.getItemNameByPlcNumber(plcNumber);
+            Item item = itemMap.get(itemName);
+            JIVariant itemValue;
+            switch (fieldAndItem.getOpcDataType()) {
+                case Short:
+                    itemValue = new JIVariant((Short) value);
+                    break;
+                case Int:
+                    itemValue = new JIVariant((Integer) value);
+                    break;
+                default:
+                    itemValue = new JIVariant("");
+                    break;
+            }
+            item.write(itemValue);
+        } catch (Exception e) {
+            LOGGER.error("OpcServe写入Item错误,尝试重新连接", e);
+            isConnect = false;
+            if (server != null) {
+                server.disconnect();
+            }
+        }
     }
 
     @PreDestroy
