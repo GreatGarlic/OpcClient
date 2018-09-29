@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import sun.security.util.BitArray;
 
+import java.nio.ByteBuffer;
 import java.util.List;
 
 @Api(tags = "PlcManager", description = "Plc管理")
@@ -47,8 +49,68 @@ public class OpcClientControl {
                 if (entity.getFieldAndItem() == FieldAndItem.motorFailure) {
 
                     int failureCode = (Integer) entity.getValue();
+                    byte[] intArray = ByteBuffer.allocate(4).putInt(failureCode).array();
+                    BitArray bitArray = new BitArray(intArray.length * 8, intArray);
+                    ObjectNode itemNode = objectMapper.createObjectNode();
+                    itemNode.put("timestamp", entity.getTimestamp());
+                    itemNode.put("value", bitArray.get(bitArray.length() - 1 - 0));
+                    rootNode.set("远程自动", itemNode);
 
-//                    bit
+                    itemNode = objectMapper.createObjectNode();
+                    itemNode.put("timestamp", entity.getTimestamp());
+                    itemNode.put("value", bitArray.get(bitArray.length() - 1 - 1));
+                    rootNode.set("主回路升", itemNode);
+
+                    itemNode = objectMapper.createObjectNode();
+                    itemNode.put("timestamp", entity.getTimestamp());
+                    itemNode.put("value", bitArray.get(bitArray.length() - 1 - 2));
+                    rootNode.set("主回路降", itemNode);
+
+                    itemNode = objectMapper.createObjectNode();
+                    itemNode.put("timestamp", entity.getTimestamp());
+                    itemNode.put("value", bitArray.get(bitArray.length() - 1 - 3));
+                    rootNode.set("故障保护", itemNode);
+
+                    itemNode = objectMapper.createObjectNode();
+                    itemNode.put("timestamp", entity.getTimestamp());
+                    itemNode.put("value", bitArray.get(bitArray.length() - 1 - 4));
+                    rootNode.set("机械上限", itemNode);
+
+                    itemNode = objectMapper.createObjectNode();
+                    itemNode.put("timestamp", entity.getTimestamp());
+                    itemNode.put("value", bitArray.get(bitArray.length() - 1 - 5));
+                    rootNode.set("机械下限", itemNode);
+
+                    itemNode = objectMapper.createObjectNode();
+                    itemNode.put("timestamp", entity.getTimestamp());
+                    itemNode.put("value", bitArray.get(bitArray.length() - 1 - 8));
+                    rootNode.set("仪表上限", itemNode);
+
+                    itemNode = objectMapper.createObjectNode();
+                    itemNode.put("timestamp", entity.getTimestamp());
+                    itemNode.put("value", bitArray.get(bitArray.length() - 1 - 9));
+                    rootNode.set("仪表下限", itemNode);
+
+                    itemNode = objectMapper.createObjectNode();
+                    itemNode.put("timestamp", entity.getTimestamp());
+                    itemNode.put("value", bitArray.get(bitArray.length() - 1 - 10));
+                    rootNode.set("仪表上升", itemNode);
+
+                    itemNode = objectMapper.createObjectNode();
+                    itemNode.put("timestamp", entity.getTimestamp());
+                    itemNode.put("value", bitArray.get(bitArray.length() - 1 - 11));
+                    rootNode.set("仪表下降", itemNode);
+
+                    itemNode = objectMapper.createObjectNode();
+                    itemNode.put("timestamp", entity.getTimestamp());
+                    itemNode.put("value", bitArray.get(bitArray.length() - 1 - 12));
+                    rootNode.set("荷重90%", itemNode);
+
+                    itemNode = objectMapper.createObjectNode();
+                    itemNode.put("timestamp", entity.getTimestamp());
+                    itemNode.put("value", bitArray.get(bitArray.length() - 1 - 13));
+                    rootNode.set("荷重110%", itemNode);
+
 
 
                 } else {
