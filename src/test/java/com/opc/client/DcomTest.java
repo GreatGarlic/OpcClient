@@ -254,11 +254,10 @@ public class DcomTest {
 
     @Test
     public void test5() {
-        byte[] intArray = ByteBuffer.allocate(4).putInt(3).array();
+        byte[] intArray = ByteBuffer.allocate(4).putInt(5).array();
         BitArray bitArray = new BitArray(intArray.length*8, intArray);
-
         for (int i = 0; i < bitArray.length(); i++) {
-            System.out.println(bitArray.get(i));
+            System.out.println(bitArray.get(bitArray.length()-1-i));
 
         }
 
