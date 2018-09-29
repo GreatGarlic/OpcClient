@@ -44,20 +44,29 @@ public class OpcClientControl {
             List<OpcEntity> plcItemValues = opcClient.getPlcItemValuesByPlcNumber(opcPlcNumber);
             ObjectNode rootNode = objectMapper.createObjectNode();
             for (OpcEntity entity : plcItemValues) {
-                ObjectNode itemNode = objectMapper.createObjectNode();
-                itemNode.put("timestamp", entity.getTimestamp());
-                switch (entity.getFieldAndItem().getOpcDataType()) {
-                    case Short:
-                    case Int:
-                        itemNode.put("value", (Integer) entity.getValue());
-                        break;
-                    case Float:
-                        itemNode.put("value", (Float) entity.getValue());
-                        break;
-                    default:
-                        break;
+                if (entity.getFieldAndItem() == FieldAndItem.motorFailure) {
+
+                    int failureCode = (Integer) entity.getValue();
+
+//                    bit
+
+
+                } else {
+                    ObjectNode itemNode = objectMapper.createObjectNode();
+                    itemNode.put("timestamp", entity.getTimestamp());
+                    switch (entity.getFieldAndItem().getOpcDataType()) {
+                        case Short:
+                        case Int:
+                            itemNode.put("value", (Integer) entity.getValue());
+                            break;
+                        case Float:
+                            itemNode.put("value", (Float) entity.getValue());
+                            break;
+                        default:
+                            break;
+                    }
+                    rootNode.set(entity.getFieldAndItem().getItemName(), itemNode);
                 }
-                rootNode.set(entity.getFieldAndItem().getItemName(), rootNode);
             }
             return objectMapper.writeValueAsString(rootNode);
         } catch (JsonProcessingException e) {

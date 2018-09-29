@@ -10,9 +10,7 @@ import org.jinterop.dcom.core.JIVariant;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.junit.Before;
 import org.junit.Test;
-import org.openscada.opc.dcom.list.ClassDetails;
 import org.openscada.opc.lib.common.ConnectionInformation;
 import org.openscada.opc.lib.da.AccessBase;
 import org.openscada.opc.lib.da.Async20Access;
@@ -22,14 +20,13 @@ import org.openscada.opc.lib.da.Group;
 import org.openscada.opc.lib.da.Item;
 import org.openscada.opc.lib.da.ItemState;
 import org.openscada.opc.lib.da.Server;
-import org.openscada.opc.lib.list.Categories;
-import org.openscada.opc.lib.list.Category;
 import org.openscada.opc.lib.list.ServerList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.security.util.BitArray;
 
+import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +34,7 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+
 //
 //@RunWith(SpringRunner.class) // SpringJUnit支持，由此引入Spring-Test框架支持！
 //@SpringBootTest(classes = StartProgram.class)
@@ -55,28 +53,28 @@ public class DcomTest {
 
     String item5 = "开度111.Value";
     String item6 = "channelone.device1.Value";
-//    @Autowired
+    //    @Autowired
     AppConfig appConfig;
     private Logger LOGGER = LoggerFactory.getLogger(DcomTest.class);
     private ServerList serverList;
     private ConnectionInformation ci;
 
-    @Before
-    public void getOpcServerList() throws Exception {
-        serverList = new ServerList(host, user, password, domain);
-        final Collection<ClassDetails> detailsList =
-                serverList.listServersWithDetails(new Category[]{Categories.OPCDAServer20}, new Category[]{});
-        for (final ClassDetails details : detailsList) {
-            LOGGER.debug("ProgID:{}", details.getProgId());
-            LOGGER.debug("ClsId:{}", details.getClsId());
-            LOGGER.debug("Description:{}", details.getDescription());
-        }
-        ci = new ConnectionInformation();
-        ci.setHost(host);
-        ci.setClsid(serverList.getClsIdFromProgId(progId));
-        ci.setUser(user);
-        ci.setPassword(password);
-    }
+//    @Before
+//    public void getOpcServerList() throws Exception {
+//        serverList = new ServerList(host, user, password, domain);
+//        final Collection<ClassDetails> detailsList =
+//                serverList.listServersWithDetails(new Category[]{Categories.OPCDAServer20}, new Category[]{});
+//        for (final ClassDetails details : detailsList) {
+//            LOGGER.debug("ProgID:{}", details.getProgId());
+//            LOGGER.debug("ClsId:{}", details.getClsId());
+//            LOGGER.debug("Description:{}", details.getDescription());
+//        }
+//        ci = new ConnectionInformation();
+//        ci.setHost(host);
+//        ci.setClsid(serverList.getClsIdFromProgId(progId));
+//        ci.setUser(user);
+//        ci.setPassword(password);
+//    }
 
     @Test
     public void syncReadOpcItem() {
@@ -256,6 +254,14 @@ public class DcomTest {
 
     @Test
     public void test5() {
+        byte[] intArray = ByteBuffer.allocate(4).putInt(3).array();
+        BitArray bitArray = new BitArray(intArray.length*8, intArray);
+
+        for (int i = 0; i < bitArray.length(); i++) {
+            System.out.println(bitArray.get(i));
+
+        }
+
 
     }
 
