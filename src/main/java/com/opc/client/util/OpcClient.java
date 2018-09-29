@@ -140,25 +140,24 @@ public class OpcClient {
             String plcNumber = plcItemValue.getKey();
             List<OpcEntity> plcItem = plcItemValue.getValue();
             for (OpcEntity entity : plcItem) {
-//                Object value=null;
-                Object value = entity.getValue();
                 OpcDataType opcDataType = entity.getFieldAndItem().getOpcDataType();
                 switch (opcDataType) {
                     case Short:
-//                        value= (Short) entity.getValue();
-                        break;
                     case Int:
-//                        value= (Integer) entity.getValue();
+                        int valueInt = (Integer) entity.getValue();
+                        LOGGER.debug("PLC编号:{} 获取时间:{} 变量名:{} 变量值:{}", plcNumber, entity.getTimestamp(),
+                                entity.getFieldAndItem().getItemName(), valueInt);
+                        break;
+                    case Float:
+                        float valueFloat = (Float) entity.getValue();
+                        LOGGER.debug("PLC编号:{} 获取时间:{} 变量名:{} 变量值:{}", plcNumber, entity.getTimestamp(),
+                                entity.getFieldAndItem().getItemName(), valueFloat);
                         break;
                     default:
                         break;
                 }
-                LOGGER.debug("PLC编号:{} 获取时间:{} 变量名:{} 变量值:{}", plcNumber, entity.getTimestamp(),
-                        entity.getFieldAndItem().getItemName(), value);
             }
-
         }
-
     }
 
     public void setItemValue(FieldAndItem fieldAndItem, String plcNumber, String value) {

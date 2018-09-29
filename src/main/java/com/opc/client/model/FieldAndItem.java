@@ -9,8 +9,8 @@ import java.util.Map;
  * @author 刘源
  */
 public enum FieldAndItem {
-    voltmeter("电压表",OpcDataType.Int),
-    ammeter("电流表",OpcDataType.Int),
+    voltmeter("电压表",OpcDataType.Float),
+    ammeter("电流表",OpcDataType.Float),
     controlWord("控制字",OpcDataType.Int),
     setCacheValue("设定缓存值",OpcDataType.Int),
     warningTimeCache("预警时间缓存",OpcDataType.Int),

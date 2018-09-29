@@ -1,7 +1,9 @@
 package com.opc.client.controller;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.opc.client.config.AppConfig;
 import com.opc.client.model.FieldAndItem;
 import com.opc.client.model.OpcEntity;
@@ -36,20 +38,56 @@ public class OpcClientControl {
     @ApiOperation(value = "获取指定plc所有参数", notes = "获取指定plc所有参数")
     @RequestMapping(path = "/items/value/{plcNumber}", method = RequestMethod.GET)
     public String getAllItemValue(@PathVariable String plcNumber) {
+        try {
+            //转换成OpcServer配置的plc序号
+            String opcPlcNumber = appConfig.getPlcNumberDictionary().get(plcNumber);
+            List<OpcEntity> plcItemValues = opcClient.getPlcItemValuesByPlcNumber(opcPlcNumber);
+            ObjectNode rootNode = objectMapper.createObjectNode();
+            for (OpcEntity entity : plcItemValues) {
+                ObjectNode itemNode = objectMapper.createObjectNode();
+                itemNode.put("timestamp", entity.getTimestamp());
+                switch (entity.getFieldAndItem().getOpcDataType()) {
+                    case Short:
+                    case Int:
+                        itemNode.put("value", (Integer) entity.getValue());
+                        break;
+                    case Float:
+                        itemNode.put("value", (Float) entity.getValue());
+                        break;
+                    default:
+                        break;
+                }
+                rootNode.set(entity.getFieldAndItem().getItemName(), rootNode);
+            }
+            return objectMapper.writeValueAsString(rootNode);
+        } catch (JsonProcessingException e) {
+            return "";
+        }
+    }
+
+    @ApiOperation(value = "设置指定plc的参数", notes = "设置指定plc的参数")
+    @RequestMapping(path = "/items/value/", method = RequestMethod.PUT)
+    public String setItemValue(@RequestParam String plcNumber, @RequestParam FieldAndItem itemName,
+                               @RequestParam String itemValue) {
         //转换成OpcServer配置的plc序号
         String opcPlcNumber = appConfig.getPlcNumberDictionary().get(plcNumber);
+
+        opcClient.setItemValue(itemName, opcPlcNumber, itemValue);
+
+
         List<OpcEntity> plcItemValues = opcClient.getPlcItemValuesByPlcNumber(opcPlcNumber);
 
         return "";
     }
 
-    @ApiOperation(value = "设置指定plc的参数", notes = "设置指定plc的参数")
-    @RequestMapping(path = "/items/value/", method = RequestMethod.PUT)
-    public String setItemValue(@RequestParam String plcNumber, @RequestParam FieldAndItem itemName, @RequestParam String itemValue) {
+    @ApiOperation(value = "启动闸门", notes = "启动闸门")
+    @RequestMapping(path = "/gate/start", method = RequestMethod.PUT)
+    public String startGate(@RequestParam String plcNumber) {
         //转换成OpcServer配置的plc序号
         String opcPlcNumber = appConfig.getPlcNumberDictionary().get(plcNumber);
 
-        opcClient.setItemValue(itemName,opcPlcNumber,itemValue);
+
+//        opcClient.setItemValue(FieldAndItem.controlWord, opcPlcNumber, itemValue);
 
 
         List<OpcEntity> plcItemValues = opcClient.getPlcItemValuesByPlcNumber(opcPlcNumber);
