@@ -23,7 +23,7 @@ import sun.security.util.BitArray;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-@Api(tags = "PlcManager", description = "Plc管理")
+@Api(tags = "PlcManagement", description = "Plc管理")
 @RestController
 @RequestMapping(path = "/api")
 public class OpcClientControl {
