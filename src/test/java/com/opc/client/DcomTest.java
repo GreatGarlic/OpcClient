@@ -264,4 +264,13 @@ public class DcomTest {
 
     }
 
+    @Test
+    public void test6(){
+
+        byte[] intArray = ByteBuffer.allocate(4).putInt(1).array();
+        BitArray bitArray = new BitArray(intArray.length * 8, intArray);
+        bitArray.set(bitArray.length() - 1 - 1, true);
+        System.out.println( ByteBuffer.wrap(bitArray.toByteArray()).getInt());
+    }
+
 }

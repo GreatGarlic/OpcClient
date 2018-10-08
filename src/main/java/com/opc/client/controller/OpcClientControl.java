@@ -112,7 +112,6 @@ public class OpcClientControl {
                     rootNode.set("荷重110%", itemNode);
 
 
-
                 } else {
                     ObjectNode itemNode = objectMapper.createObjectNode();
                     itemNode.put("timestamp", entity.getTimestamp());
@@ -140,30 +139,69 @@ public class OpcClientControl {
     @RequestMapping(path = "/items/value/", method = RequestMethod.PUT)
     public String setItemValue(@RequestParam String plcNumber, @RequestParam FieldAndItem itemName,
                                @RequestParam String itemValue) {
-        //转换成OpcServer配置的plc序号
-        String opcPlcNumber = appConfig.getPlcNumberDictionary().get(plcNumber);
 
-        opcClient.setItemValue(itemName, opcPlcNumber, itemValue);
+        try {
+            //转换成OpcServer配置的plc序号
+            String opcPlcNumber = appConfig.getPlcNumberDictionary().get(plcNumber);
+            opcClient.setItemValue(itemName, opcPlcNumber, itemValue);
+            int value = (int) opcClient.getItemValue(FieldAndItem.controlWord, opcPlcNumber);
+            byte[] intArray = ByteBuffer.allocate(4).putInt(value).array();
+            BitArray bitArray = new BitArray(intArray.length * 8, intArray);
+            if (itemName == FieldAndItem.setCacheValue) {
+                bitArray.set(bitArray.length() - 1 - 4, true);
+                String valueStr = String.valueOf(ByteBuffer.wrap(bitArray.toByteArray()).getInt());
+                opcClient.setItemValue(FieldAndItem.controlWord, opcPlcNumber, valueStr);
+                Thread.sleep(500);
+                value = (int) opcClient.getItemValue(FieldAndItem.controlWord, opcPlcNumber);
+                intArray = ByteBuffer.allocate(4).putInt(value).array();
+                bitArray = new BitArray(intArray.length * 8, intArray);
+                bitArray.set(bitArray.length() - 1 - 4, false);
+                valueStr = String.valueOf(ByteBuffer.wrap(bitArray.toByteArray()).getInt());
+                opcClient.setItemValue(FieldAndItem.controlWord, opcPlcNumber, valueStr);
 
-
-        List<OpcEntity> plcItemValues = opcClient.getPlcItemValuesByPlcNumber(opcPlcNumber);
-
-        return "";
+            } else if (itemName == FieldAndItem.warningTimeCache) {
+                bitArray.set(bitArray.length() - 1 - 6, true);
+                String valueStr = String.valueOf(ByteBuffer.wrap(bitArray.toByteArray()).getInt());
+                opcClient.setItemValue(FieldAndItem.controlWord, opcPlcNumber, valueStr);
+                Thread.sleep(500);
+                value = (int) opcClient.getItemValue(FieldAndItem.controlWord, opcPlcNumber);
+                intArray = ByteBuffer.allocate(4).putInt(value).array();
+                bitArray = new BitArray(intArray.length * 8, intArray);
+                bitArray.set(bitArray.length() - 1 - 6, false);
+                valueStr = String.valueOf(ByteBuffer.wrap(bitArray.toByteArray()).getInt());
+                opcClient.setItemValue(FieldAndItem.controlWord, opcPlcNumber, valueStr);
+            }
+        } catch (Exception e) {
+            LOGGER.error("设置出错", e);
+            return "error";
+        }
+        return getAllItemValue(plcNumber);
     }
 
     @ApiOperation(value = "启动闸门", notes = "启动闸门")
     @RequestMapping(path = "/gate/start", method = RequestMethod.PUT)
     public String startGate(@RequestParam String plcNumber) {
-        //转换成OpcServer配置的plc序号
-        String opcPlcNumber = appConfig.getPlcNumberDictionary().get(plcNumber);
 
-
-//        opcClient.setItemValue(FieldAndItem.controlWord, opcPlcNumber, itemValue);
-
-
-        List<OpcEntity> plcItemValues = opcClient.getPlcItemValuesByPlcNumber(opcPlcNumber);
-
-        return "";
+        try {
+            //转换成OpcServer配置的plc序号
+            String opcPlcNumber = appConfig.getPlcNumberDictionary().get(plcNumber);
+            int value = (int) opcClient.getItemValue(FieldAndItem.controlWord, opcPlcNumber);
+            byte[] intArray = ByteBuffer.allocate(4).putInt(value).array();
+            BitArray bitArray = new BitArray(intArray.length * 8, intArray);
+            bitArray.set(bitArray.length() - 1 - 0, true);
+            String valueStr = String.valueOf(ByteBuffer.wrap(bitArray.toByteArray()).getInt());
+            opcClient.setItemValue(FieldAndItem.controlWord, opcPlcNumber, valueStr);
+            Thread.sleep(500);
+            value = (int) opcClient.getItemValue(FieldAndItem.controlWord, opcPlcNumber);
+            intArray = ByteBuffer.allocate(4).putInt(value).array();
+            bitArray = new BitArray(intArray.length * 8, intArray);
+            bitArray.set(bitArray.length() - 1 - 0, false);
+            valueStr = String.valueOf(ByteBuffer.wrap(bitArray.toByteArray()).getInt());
+            opcClient.setItemValue(FieldAndItem.controlWord, opcPlcNumber, valueStr);
+        } catch (Exception e) {
+            LOGGER.error("闸门开启出错", e);
+        }
+        return getAllItemValue(plcNumber);
     }
 
 

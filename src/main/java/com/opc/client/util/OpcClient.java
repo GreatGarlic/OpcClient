@@ -186,6 +186,21 @@ public class OpcClient {
         }
     }
 
+    public Object getItemValue(FieldAndItem fieldAndItem, String plcNumber) {
+        try {
+            String itemName = fieldAndItem.getItemNameByPlcNumber(plcNumber);
+            ItemState state = itemMap.get(itemName).read(true);
+            return state.getValue().getObject();
+        } catch (Exception e) {
+            LOGGER.error("OpcServe读取Item错误,尝试重新连接", e);
+            isConnect = false;
+            if (server != null) {
+                server.disconnect();
+            }
+        }
+        return null;
+    }
+
     @PreDestroy
     public void destroy() {
         if (server != null) {
