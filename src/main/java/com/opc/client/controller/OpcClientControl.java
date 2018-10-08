@@ -203,6 +203,31 @@ public class OpcClientControl {
         }
         return getAllItemValue(plcNumber);
     }
+    @ApiOperation(value = "停止闸门", notes = "停止闸门")
+    @RequestMapping(path = "/gate/stop", method = RequestMethod.PUT)
+    public String stopGate(@RequestParam String plcNumber) {
+
+        try {
+            //转换成OpcServer配置的plc序号
+            String opcPlcNumber = appConfig.getPlcNumberDictionary().get(plcNumber);
+            int value = (int) opcClient.getItemValue(FieldAndItem.controlWord, opcPlcNumber);
+            byte[] intArray = ByteBuffer.allocate(4).putInt(value).array();
+            BitArray bitArray = new BitArray(intArray.length * 8, intArray);
+            bitArray.set(bitArray.length() - 1 - 1, true);
+            String valueStr = String.valueOf(ByteBuffer.wrap(bitArray.toByteArray()).getInt());
+            opcClient.setItemValue(FieldAndItem.controlWord, opcPlcNumber, valueStr);
+            Thread.sleep(500);
+            value = (int) opcClient.getItemValue(FieldAndItem.controlWord, opcPlcNumber);
+            intArray = ByteBuffer.allocate(4).putInt(value).array();
+            bitArray = new BitArray(intArray.length * 8, intArray);
+            bitArray.set(bitArray.length() - 1 - 1, false);
+            valueStr = String.valueOf(ByteBuffer.wrap(bitArray.toByteArray()).getInt());
+            opcClient.setItemValue(FieldAndItem.controlWord, opcPlcNumber, valueStr);
+        } catch (Exception e) {
+            LOGGER.error("闸门停止出错", e);
+        }
+        return getAllItemValue(plcNumber);
+    }
 
 
 }
