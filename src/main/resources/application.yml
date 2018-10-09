@@ -11,7 +11,15 @@ app-config:
 #    767679: 114
 #    767678: 115
 
+
 server:
   # WebServer bind port
   port: 9011
-
+security:
+  jwt:
+    login:
+      username:
+      password:
+    token:
+      secret-key: secret-key
+      expire-length: 36000
