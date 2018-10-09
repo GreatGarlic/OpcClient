@@ -18,18 +18,20 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        if(!jwtSettings.getUsername().equals(username)){
+        if (!jwtSettings.getUsername().equals(username)) {
             throw new UsernameNotFoundException("User '" + username + "' not found");
         }
+        //TODO:可以是其他获取用户信息的途径
+//        final User user = userRepository.findByUsername(username);
+//        if (user == null) {
+//            throw new UsernameNotFoundException("User '" + username + "' not found");
+//        }
+
         // 这里设置权限和角色
         ArrayList<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(Role.ROLE_ADMIN);
         authorities.add(Role.ROLE_GUEST);
 
-//        final User user = userRepository.findByUsername(username);
-//        if (user == null) {
-//            throw new UsernameNotFoundException("User '" + username + "' not found");
-//        }
 
         return org.springframework.security.core.userdetails.User
                 .withUsername(username)
