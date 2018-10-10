@@ -69,7 +69,6 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
             }
             // 设置过期时间
             Calendar calendar = Calendar.getInstance();
-            calendar.setTime(new Date());
             calendar.add(Calendar.MINUTE, jwtSettings.getExpireLength());
             Date time = calendar.getTime();
             Claims claims = Jwts.claims().setSubject(auth.getName());
