@@ -28,7 +28,7 @@ public class JwtSettings {
     @Value("${security.jwt.token.secret-key}")
     private String secretKey;
     @Value("${security.jwt.token.expire-length}")
-    private String expireLength;
+    private int expireLength;
 
     public String getUsername() {
         return username;
@@ -54,11 +54,11 @@ public class JwtSettings {
         this.secretKey = secretKey;
     }
 
-    public String getExpireLength() {
+    public int getExpireLength() {
         return expireLength;
     }
 
-    public void setExpireLength(String expireLength) {
+    public void setExpireLength(int expireLength) {
         this.expireLength = expireLength;
     }
 }
