@@ -1,8 +1,7 @@
 package com.opc.client.config;
 
-import boss.portal.filter.JWTAuthenticationFilter;
-import boss.portal.filter.JWTLoginFilter;
-import boss.portal.service.impl.CustomAuthenticationProvider;
+import com.opc.client.security.JWTAuthenticationFilter;
+import com.opc.client.security.JWTLoginFilter;
 import com.opc.client.security.JwtAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -14,14 +13,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * SpringSecurity的配置
+ *
  * @author Administrator
  */
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     /**
@@ -29,8 +28,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      */
     private static final String[] AUTH_WHITELIST = {
             // -- register url
-            "/users/login",
-            "/users/register",
+
             // -- swagger ui
             "/v2/api-docs",
             "/swagger-resources/**",
@@ -45,8 +43,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder(12);
+        return new BCryptPasswordEncoder();
     }
+
+
+    @Bean
+    protected JWTLoginFilter buildJWTLoginFilter() throws Exception {
+        JWTLoginFilter filter = new JWTLoginFilter();
+        filter.setAuthenticationManager(authenticationManagerBean());
+        return filter;
+    }
+
+    @Bean
+    protected JWTAuthenticationFilter buildJWTAuthenticationFilter() throws Exception {
+        return new JWTAuthenticationFilter(authenticationManagerBean());
+    }
+
     // 设置 HTTP 验证规则
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -57,8 +69,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest()
                 .authenticated()
                 .and()// 所有请求需要身份认证
-                .addFilter(new JWTLoginFilter(authenticationManager()))
-                .addFilter(new JWTAuthenticationFilter(authenticationManager()));
+                .addFilter(buildJWTLoginFilter())
+                .addFilter(buildJWTAuthenticationFilter());
 
     }
 

@@ -18,8 +18,8 @@ server:
 security:
   jwt:
     login:
-      username:
-      password:
+      username: admin
+      password: 123456
     token:
       secret-key: secret-key
       expire-length: 36000

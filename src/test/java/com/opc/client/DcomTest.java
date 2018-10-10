@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import sun.security.util.BitArray;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -255,9 +256,9 @@ public class DcomTest {
     @Test
     public void test5() {
         byte[] intArray = ByteBuffer.allocate(4).putInt(5).array();
-        BitArray bitArray = new BitArray(intArray.length*8, intArray);
+        BitArray bitArray = new BitArray(intArray.length * 8, intArray);
         for (int i = 0; i < bitArray.length(); i++) {
-            System.out.println(bitArray.get(bitArray.length()-1-i));
+            System.out.println(bitArray.get(bitArray.length() - 1 - i));
 
         }
 
@@ -265,12 +266,30 @@ public class DcomTest {
     }
 
     @Test
-    public void test6(){
+    public void test6() {
 
         byte[] intArray = ByteBuffer.allocate(4).putInt(1).array();
         BitArray bitArray = new BitArray(intArray.length * 8, intArray);
         bitArray.set(bitArray.length() - 1 - 1, true);
-        System.out.println( ByteBuffer.wrap(bitArray.toByteArray()).getInt());
+        System.out.println(ByteBuffer.wrap(bitArray.toByteArray()).getInt());
+    }
+
+    @Test
+    public void test7() throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        ArrayNode arrayNode = objectMapper.createArrayNode();
+
+        arrayNode.add("哈哈");
+        arrayNode.add("嘿嘿");
+
+        System.out.println(arrayNode.toString());
+
+        JsonNode haha = objectMapper.readTree(arrayNode.toString());
+        for (JsonNode heihei :haha) {
+            System.out.println(heihei.asText());
+
+        }
+
     }
 
 }

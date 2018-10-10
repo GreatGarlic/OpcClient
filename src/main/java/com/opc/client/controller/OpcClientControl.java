@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,6 +27,7 @@ import java.util.List;
 @Api(tags = "PlcManagement", description = "Plc管理")
 @RestController
 @RequestMapping(path = "/api")
+@PreAuthorize("hasRole('ROLE_ADMIN') and hasRole('ROLE_GUEST')")
 public class OpcClientControl {
     private static final Logger LOGGER = LoggerFactory.getLogger(OpcClientControl.class);
 
@@ -203,6 +205,7 @@ public class OpcClientControl {
         }
         return getAllItemValue(plcNumber);
     }
+
     @ApiOperation(value = "停止闸门", notes = "停止闸门")
     @RequestMapping(path = "/gate/stop", method = RequestMethod.PUT)
     public String stopGate(@RequestParam String plcNumber) {

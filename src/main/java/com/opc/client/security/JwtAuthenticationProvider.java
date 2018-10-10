@@ -30,7 +30,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         if (null != userDetails) {
             if (bCryptPasswordEncoder.matches(password, userDetails.getPassword())) {
                 // 生成令牌 这里令牌里面存入了:name,password,authorities, 当然你也可以放其他内容
-                Authentication auth = new UsernamePasswordAuthenticationToken(username, password, userDetails.getAuthorities());
+                Authentication auth = new UsernamePasswordAuthenticationToken(username, null, userDetails.getAuthorities());
                 return auth;
             } else {
                 throw new BadCredentialsException("密码错误");
