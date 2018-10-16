@@ -15,6 +15,14 @@ app-config:
 server:
   # WebServer bind port
   port: 9011
+  tomcat:
+    uri-encoding: UTF-8
+spring:
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
 security:
   jwt:
     login:
@@ -23,3 +31,4 @@ security:
     token:
       secret-key: secret-key
       expire-length: 10
+
