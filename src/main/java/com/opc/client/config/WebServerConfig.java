@@ -15,6 +15,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.time.Duration;
 
 @Configuration
+//@EnableWebMvc
 public class WebServerConfig {
 
     /**
@@ -64,6 +65,7 @@ public class WebServerConfig {
                         .allowedOrigins("*")
                         .allowedMethods("*")
                         .allowedHeaders("*")
+                        .exposedHeaders("Authorization")
                         .maxAge(1800);
             }
 

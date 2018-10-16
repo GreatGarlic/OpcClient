@@ -18,6 +18,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -80,6 +81,9 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
                     .compact();
             // 登录成功后，返回token到header里面
             response.addHeader("Authorization", "Bearer " + token);
+            PrintWriter ss = response.getWriter();
+            ss.write("{}");
+            ss.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
