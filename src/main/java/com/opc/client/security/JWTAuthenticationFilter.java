@@ -67,12 +67,12 @@ public class JWTAuthenticationFilter extends BasicAuthenticationFilter {
         // parse the token.
         String user = null;
         try {
-            Claims Claims = Jwts.parser()
+            Claims claims = Jwts.parser()
                     .setSigningKey(jwtSettings.getSecretKey())
                     .parseClaimsJws(token.replace("Bearer ", ""))
                     .getBody();
-            user = Claims.getSubject();
-            JsonNode jsonNode = objectMapper.readTree(Claims.get("auth", String.class));
+            user = claims.getSubject();
+            JsonNode jsonNode = objectMapper.readTree(claims.get("auth", String.class));
             long end = System.currentTimeMillis();
             logger.info("执行时间: {}", (end - start) + " 毫秒");
             if (user != null) {

@@ -12,7 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JwtAuthenticationProvider implements AuthenticationProvider {
+public class JWTAuthenticationProvider implements AuthenticationProvider {
 
     @Autowired
     UserDetailsServiceImpl userDetailsServiceImpl;

@@ -2,7 +2,7 @@ package com.opc.client.config;
 
 import com.opc.client.security.JWTAuthenticationFilter;
 import com.opc.client.security.JWTLoginFilter;
-import com.opc.client.security.JwtAuthenticationProvider;
+import com.opc.client.security.JWTAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,7 +41,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 
     @Autowired
-    private JwtAuthenticationProvider jwtAuthenticationProvider;
+    private JWTAuthenticationProvider jwtAuthenticationProvider;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {

@@ -83,9 +83,9 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
             response.addHeader("Authorization", "Bearer " + token);
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/json; charset=utf-8");
-            PrintWriter ss = response.getWriter();
-            ss.write("{\"status\":\"success\"}");
-            ss.close();
+            PrintWriter printWriter = response.getWriter();
+            printWriter.write("{\"status\":\"success\"}");
+            printWriter.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
