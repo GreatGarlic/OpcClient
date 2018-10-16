@@ -82,7 +82,7 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
             // 登录成功后，返回token到header里面
             response.addHeader("Authorization", "Bearer " + token);
             PrintWriter ss = response.getWriter();
-            ss.write("{}");
+            ss.write("{\"status\":\"success\"}");
             ss.close();
         } catch (Exception e) {
             e.printStackTrace();
