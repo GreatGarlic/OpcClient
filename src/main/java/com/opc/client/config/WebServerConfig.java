@@ -15,7 +15,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.time.Duration;
 
 @Configuration
-//@EnableWebMvc
 public class WebServerConfig {
 
     /**

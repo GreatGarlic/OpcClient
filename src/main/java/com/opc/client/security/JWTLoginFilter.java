@@ -81,6 +81,8 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
                     .compact();
             // 登录成功后，返回token到header里面
             response.addHeader("Authorization", "Bearer " + token);
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/json; charset=utf-8");
             PrintWriter ss = response.getWriter();
             ss.write("{\"status\":\"success\"}");
             ss.close();
