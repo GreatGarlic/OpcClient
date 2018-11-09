@@ -10,6 +10,7 @@ import com.opc.client.model.OpcEntity;
 import com.opc.client.util.OpcClient;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,7 +114,6 @@ public class OpcClientControl {
                     itemNode.put("value", bitArray.get(bitArray.length() - 1 - 13));
                     rootNode.set("荷重110%", itemNode);
 
-
                 } else {
                     ObjectNode itemNode = objectMapper.createObjectNode();
                     itemNode.put("timestamp", entity.getTimestamp());
@@ -131,6 +131,7 @@ public class OpcClientControl {
                     rootNode.set(entity.getFieldAndItem().getItemName(), itemNode);
                 }
             }
+            rootNode.put("采集时间", OpcClient.formatter.print(DateTime.now()));
             return objectMapper.writeValueAsString(rootNode);
         } catch (JsonProcessingException e) {
             return "";

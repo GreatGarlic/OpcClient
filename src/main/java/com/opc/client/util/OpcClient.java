@@ -37,6 +37,7 @@ import java.util.concurrent.ScheduledExecutorService;
 
 @Component
 public class OpcClient {
+    public static final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
     @Autowired
     AppConfig appConfig;
     private Server server;
@@ -44,7 +45,6 @@ public class OpcClient {
     private volatile boolean isConnect = false;
     private Group group;
     private Map<String, Item> itemMap;
-    private DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
 
     @PostConstruct
     public void init() {
