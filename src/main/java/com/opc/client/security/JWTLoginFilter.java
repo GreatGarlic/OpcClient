@@ -70,7 +70,7 @@ public class JWTLoginFilter extends UsernamePasswordAuthenticationFilter {
             }
             // 设置过期时间
             Calendar calendar = Calendar.getInstance();
-            calendar.add(Calendar.MINUTE, jwtSettings.getExpireLength());
+            calendar.add(Calendar.HOUR_OF_DAY, jwtSettings.getExpireLength());
             Date time = calendar.getTime();
             Claims claims = Jwts.claims().setSubject(auth.getName());
             claims.put("auth", arrayNode.toString());

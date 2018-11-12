@@ -26,9 +26,10 @@ spring:
 security:
   jwt:
     login:
-      username: admin
-      password: 123456
+      username: OpcAdmin
+      password: SummitOpcAdmin
     token:
       secret-key: secret-key
-      expire-length: 10
+      #单位小时
+      expire-length: 24
 
