@@ -7,12 +7,17 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.nio.charset.Charset;
 import java.time.Duration;
+import java.util.List;
 
 @Configuration
 public class WebServerConfig {
@@ -47,6 +52,13 @@ public class WebServerConfig {
         return registration;
     }
 
+    @Bean
+    public HttpMessageConverter<String> responseBodyConverter() {
+        StringHttpMessageConverter stringHttpMessageConverter=new StringHttpMessageConverter(Charset.forName("UTF-8"));
+        stringHttpMessageConverter.setWriteAcceptCharset(false);
+        return stringHttpMessageConverter;
+    }
+
     /**
      * SpringMVC配置
      */
@@ -78,6 +90,15 @@ public class WebServerConfig {
                         "/webjars/");
             }
 
+            @Override
+            public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+                converters.add(responseBodyConverter());
+            }
+
+            @Override
+            public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
+                configurer.favorPathExtension(false);
+            }
         };
     }
 
