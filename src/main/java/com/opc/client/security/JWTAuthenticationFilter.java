@@ -71,6 +71,7 @@ public class JWTAuthenticationFilter extends BasicAuthenticationFilter {
                     .setSigningKey(jwtSettings.getSecretKey())
                     .parseClaimsJws(token.replace("Bearer ", ""))
                     .getBody();
+            //获取用户名
             user = claims.getSubject();
             JsonNode jsonNode = objectMapper.readTree(claims.get("auth", String.class));
             long end = System.currentTimeMillis();

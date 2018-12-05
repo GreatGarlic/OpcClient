@@ -19,15 +19,21 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
-
+    /**
+     * 认证逻辑
+     * @param authentication 认证请求
+     * @return 返回认证结果
+     * @throws AuthenticationException
+     */
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         // 获取认证的用户名 & 密码
         String username = authentication.getName();
         String password = authentication.getCredentials().toString();
-        // 认证逻辑
+        // 通过用户名取出用户相关信息
         UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(username);
         if (null != userDetails) {
+            //比对用户信息中的密码和登录时的密码
             if (bCryptPasswordEncoder.matches(password, userDetails.getPassword())) {
                 // 生成令牌 这里令牌里面存入了:name,password,authorities, 当然你也可以放其他内容
                 Authentication auth = new UsernamePasswordAuthenticationToken(username, null, userDetails.getAuthorities());
@@ -41,7 +47,7 @@ public class JWTAuthenticationProvider implements AuthenticationProvider {
     }
 
     /**
-     * 是否可以提供输入类型的认证服务
+     * 表示该认证实现类支持UsernamePasswordAuthenticationToken类型的token认证
      * @param authentication
      * @return
      */
