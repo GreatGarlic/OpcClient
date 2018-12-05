@@ -1,8 +1,8 @@
 package com.opc.client.config;
 
 import com.opc.client.security.JWTAuthenticationFilter;
-import com.opc.client.security.JWTLoginFilter;
 import com.opc.client.security.JWTAuthenticationProvider;
+import com.opc.client.security.JWTLoginFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.filter.CorsFilter;
 
 /**
  * SpringSecurity的配置
@@ -37,7 +38,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/swagger-ui.html",
             "/webjars/**"
     };
-
 
 
     @Autowired
@@ -72,8 +72,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest()
                 .authenticated()
                 .and()// 所有请求需要身份认证
-                .addFilter(buildJWTLoginFilter())
-                .addFilter(buildJWTAuthenticationFilter());
+                .addFilterAfter(buildJWTAuthenticationFilter(), CorsFilter.class)
+                .addFilterAfter(buildJWTLoginFilter(), JWTAuthenticationFilter.class);
 
     }
 
