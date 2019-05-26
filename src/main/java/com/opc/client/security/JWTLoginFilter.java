@@ -16,6 +16,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -24,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 验证用户名密码正确后，生成一个token，并将token返回给客户端
@@ -34,19 +37,20 @@ import java.util.Date;
  * @author Administrator
  */
 public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
-
+    private static final Pattern p = Pattern.compile("\\s*|\t|\r|\n");
 
     @Autowired
     JwtSettings jwtSettings;
     private ObjectMapper objectMapper = new ObjectMapper();
 
 
-    public JWTLoginFilter(){
+    public JWTLoginFilter() {
         super(new AntPathRequestMatcher("/login", "POST"));
     }
 
     /**
      * 接收并解析用户凭证
+     *
      * @param req
      * @param res
      * @return
@@ -55,7 +59,15 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res) throws AuthenticationException {
         try {
-            User user = new ObjectMapper().readValue(req.getInputStream(), User.class);
+            int len = req.getContentLength();
+            ServletInputStream inputStream = req.getInputStream();
+            byte[] buffer = new byte[len];
+            inputStream.read(buffer, 0, len);
+            String body = new String(buffer);
+            Matcher m = p.matcher(body);
+            body = m.replaceAll("");
+
+            User user = new ObjectMapper().readValue(body, User.class);
             //封装认证请求
             UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
                     user.getUsername(),
@@ -64,13 +76,14 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
             // Allow subclasses to set the "details" property
             setDetails(req, authRequest);
             return this.getAuthenticationManager().authenticate(authRequest);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     /**
      * 用户成功登录后，这个方法会被调用，我们在这个方法里生成token
+     *
      * @param request
      * @param response
      * @param chain
@@ -113,13 +126,14 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
             e.printStackTrace();
         }
     }
+
     /**
      * Provided so that subclasses may configure what is put into the authentication
      * request's details property.
      *
-     * @param request that an authentication request is being created for
+     * @param request     that an authentication request is being created for
      * @param authRequest the authentication request object that should have its details
-     * set
+     *                    set
      */
     private void setDetails(HttpServletRequest request, UsernamePasswordAuthenticationToken authRequest) {
         authRequest.setDetails(authenticationDetailsSource.buildDetails(request));
