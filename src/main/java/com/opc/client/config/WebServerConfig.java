@@ -12,7 +12,6 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.nio.charset.Charset;
@@ -83,12 +82,12 @@ public class WebServerConfig {
             /**
              * 资源加载配置
              */
-            @Override
-            public void addResourceHandlers(ResourceHandlerRegistry registry) {
-                registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
-                registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources" +
-                        "/webjars/");
-            }
+//            @Override
+//            public void addResourceHandlers(ResourceHandlerRegistry registry) {
+////                registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
+//                registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources" +
+//                        "/webjars/");
+//            }
 
             @Override
             public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {

@@ -59,7 +59,7 @@
     <!--<appender-ref ref="ERRORFILE"/>-->
     <!--</appender>-->
     <logger name="com.opc.client.util.OpcClient" level="error"/>
-    <logger name="org.springframework" level="error"/>
+    <logger name="org.springframework" level="debug"/>
     <logger name="com.zaxxer.hikari" level="error"/>
     <logger name="org.openscada" level="debug"/>
     <logger name="org.jinterop" level="error"/>
